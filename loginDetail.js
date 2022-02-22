@@ -7,8 +7,16 @@ var id = 0;
 
 const Home =() => {
     const flatlistRef = useRef();
-    const onPressFunction = () => {
-        flatlistRef.current.scrollToEnd({animating: true});
+    const loadmore = () => {
+        if(flatlistRef.current.scrollToEnd({animating: true}))
+            return <View>
+            <FlatList
+                data={ListItems}
+                renderItem={renderItem}
+                keyExtractor={item=>item.title}
+                ref={flatlistRef}
+            />
+        </View>
       };
     return(
         <View>
