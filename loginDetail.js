@@ -1,5 +1,5 @@
 import React, { useState ,useRef} from "react";
-import {View, StyleSheet, Text,Image, FlatList, ActivityIndicator,Pressable} from 'react-native';
+import {View, StyleSheet, Text,Image, FlatList, ActivityIndicator} from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -7,17 +7,18 @@ var id = 0;
 
 const Home =() => {
     const flatlistRef = useRef();
-    const loadmore = () => {
-        if(flatlistRef.current.scrollToEnd({animating: true}))
-            return <View>
-            <FlatList
-                data={ListItems}
-                renderItem={renderItem}
-                keyExtractor={item=>item.title}
-                ref={flatlistRef}
-            />
-        </View>
-      };
+    // const loadmore = () => {
+    //     if(flatlistRef.current.scrollToEnd({animating: true}))
+    //         return <View>
+    //         <FlatList
+    //             data={ListItems}
+    //             renderItem={renderItem}
+    //             keyExtractor={item=>item.title}
+    //             ref={flatlistRef}
+    //         />
+    //     </View>
+    //   };
+    
     return(
         <View>
             <FlatList
@@ -25,6 +26,7 @@ const Home =() => {
                 renderItem={renderItem}
                 keyExtractor={item=>item.title}
                 ref={flatlistRef}
+                onEndReached={generateListItems(id)}
             />
         </View>
     );
