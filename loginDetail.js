@@ -1,45 +1,67 @@
-import React, { useState ,useRef} from "react";
-import {View, StyleSheet, Text,Image, FlatList, ActivityIndicator,Pressable} from 'react-native';
+import React, { useState ,useRef, useEffect} from "react";
+import {View, StyleSheet, Text,Image, FlatList} from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from 'react-native-vector-icons/Ionicons';
-
-var id = 0;
+import fakeServer from "./fakeServer";
 
 const Home =() => {
-    const flatlistRef = useRef();
-    const loadmore = () => {
-        if(flatlistRef.current.scrollToEnd({animating: true}))
-            return <View>
-            <FlatList
-                data={ListItems}
-                renderItem={renderItem}
-                keyExtractor={item=>item.title}
-                ref={flatlistRef}
-            />
-        </View>
-      };
+    const [data, setData] = useState();
+
+    const fetchData = async () => {
+        const response = await fakeServer(10 , 100);
+        setData([...response]);
+    }
+
+    useEffect( () => {
+            fetchData();
+        }, []);
+
+    const handleOnEndReached = async () => {
+        const response = await fakeServer(10 ,200);
+        setData([...data, ...response]);
+    }
+
     return(
         <View>
             <FlatList
-                data={ListItems}
+                data={data}
+                keyExtractor={item => item.title}
                 renderItem={renderItem}
-                keyExtractor={item=>item.title}
-                ref={flatlistRef}
+                onEndReached={handleOnEndReached}
+                onEndReachedThreshold={0.5}
             />
+        </View>
+    );
+}
+
+const renderItem = ({item}) => { 
+    return(<Item title={item.title} 
+        category={item.category} 
+        timestamp = {item.timestamp} 
+        thumb = {item.thumb} />)};
+
+const Item = ({thumb, title, category, timestamp}) => {
+    return (
+        <View style={styles.item}>
+            <Image style={{borderRadius:5}} source={{uri:thumb ,width: 60, height: 60}}/>
+            <View style={{marginLeft:15}}>
+            <Text>Title:{title}</Text>
+            <Text>Category:{category}</Text>
+            <Text>Time:{convertTime(timestamp)}</Text>
+         </View>
         </View>
     );
 }
 
 const Profile =() => {
-    //const [id, setId] = useState(0);
-    
     return(
         <View>
-            {generateListItems(id)}
+           <Text>Profile</Text>
         </View>
     );
    
 }
+
 const Notifications =() => {
     return(
         <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -47,6 +69,7 @@ const Notifications =() => {
         </View>
     );
 }
+
 const Tabs = createBottomTabNavigator();
 const detailScreen = () => 
 {
@@ -78,31 +101,7 @@ const detailScreen = () =>
            </Tabs.Navigator>
     )
 }
-const renderItem = ({item}) => { return(<Item title={item.title} category={item.category} timestamp = {item.timestamp} thumb= {item.thumb} />)};
 
-const Item = ({thumb, title, category, timestamp}) => {
-    return (
-        <View style={styles.item}>
-            <Image style={{borderRadius:5}} source={{uri:thumb ,width: 60, height: 60}}/>
-            <View style={{marginLeft:15}}>
-            <Text>Title:{title}</Text>
-            <Text>Category:{category}</Text>
-            <Text>Time:{convertTime(timestamp)}</Text>
-         </View>
-        </View>
-    );
-}
-const generateListItems = (id) => {
-    var itemContent = [];
-    for(let i = id; i < 10 ; i++) {
-        if(i&1)
-        itemContent.push(<ItemDetail title={i} thumb={ListItems[0].thumb} cat={ListItems[0].category} timestamp={ListItems[0].timestamp}></ItemDetail>);
-        else
-        itemContent.push(<ItemDetail title={i} thumb={ListItems[1].thumb} cat={ListItems[1].category} timestamp={ListItems[1].timestamp}></ItemDetail>);
-    }
-    id+=10;
-    return itemContent;
-}
 const convertTime = (timestamp) => {
     var years, months, days, hours, minutes, seconds;
     var currentSeconds = Date.now()/1000;
@@ -135,24 +134,6 @@ const ItemDetail = ({thumb, title, cat, timestamp}) => {
    )
  }
 
- const ListItems=[
-   {title:1, category:'cat', thumb:'https://www.sierraclub.org/sites/www.sierraclub.org/files/styles/flexslider_full/public/sierra/articles/big/SIERRA%20Night%20Sky%20WB.jpeg?itok=jxh1nTJA%27',timestamp:'1643256662'},
-   {title:2, category:'cat', thumb:'https://images.unsplash.com/photo-1484589065579-248aad0d8b13?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=759&q=80',timestamp:'1643256662'},
-   {title:3, category:'cat', thumb:'https://www.sierraclub.org/sites/www.sierraclub.org/files/styles/flexslider_full/public/sierra/articles/big/SIERRA%20Night%20Sky%20WB.jpeg?itok=jxh1nTJA%27',timestamp:'1643256662'},
-   {title:4, category:'cat', thumb:'https://images.unsplash.com/photo-1484589065579-248aad0d8b13?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=759&q=80',timestamp:'1643256662'},
-   {title:5, category:'cat', thumb:'https://www.sierraclub.org/sites/www.sierraclub.org/files/styles/flexslider_full/public/sierra/articles/big/SIERRA%20Night%20Sky%20WB.jpeg?itok=jxh1nTJA%27',timestamp:'1643256662'},
-   {title:6, category:'cat', thumb:'https://images.unsplash.com/photo-1484589065579-248aad0d8b13?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=759&q=80',timestamp:'1643256662'},
-   {title:7, category:'cat', thumb:'https://www.sierraclub.org/sites/www.sierraclub.org/files/styles/flexslider_full/public/sierra/articles/big/SIERRA%20Night%20Sky%20WB.jpeg?itok=jxh1nTJA%27',timestamp:'1643256662'},
-   {title:8, category:'cat', thumb:'https://images.unsplash.com/photo-1484589065579-248aad0d8b13?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=759&q=80',timestamp:'1643256662'},
-   {title:9, category:'cat', thumb:'https://www.sierraclub.org/sites/www.sierraclub.org/files/styles/flexslider_full/public/sierra/articles/big/SIERRA%20Night%20Sky%20WB.jpeg?itok=jxh1nTJA%27',timestamp:'1643256662'},
-   {title:10, category:'cat', thumb:'https://images.unsplash.com/photo-1484589065579-248aad0d8b13?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=759&q=80',timestamp:'1643256662'}
- ]
-const Loadmore = () => {
-    const [isLoad, setIsLoad] = useState(true);
-    if(isLoad ===true)
-    setTimeout(setIsLoad(false),1000);
-    return <ActivityIndicator hidesWhenStopped={isLoad}/>;
-}
 const styles = StyleSheet.create({
     item: {
         flexDirection:'row',
