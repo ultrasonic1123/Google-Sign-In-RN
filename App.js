@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, Image, View, Text, TouchableOpacity, Linking } from 'react-native';
+import { StyleSheet, TextInput, Image, View, Text, TouchableOpacity, Linking,useEffect,FlatList} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import detailScreen from './loginDetail';
+import { DarkTheme } from '@react-navigation/native';
+// import {LoginScreen} from './Screens/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 const App = () => {
+  const [theme, setTheme] = useState(DarkTheme);
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={theme}>
       <Stack.Navigator initialRouteName='LoginScr'>
         <Stack.Screen name='LoginScr' component={LoginScreen} options={{title:'Log In'}}/>
         <Stack.Screen name='RegisterScr' component={RegisterScreen} options={{title:'Register'}}/>
@@ -18,6 +21,7 @@ const App = () => {
     </NavigationContainer>
   );
 }
+
 /////////////////////
 ///Register Screen///
 /////////////////////
@@ -116,7 +120,7 @@ const RegisterScreen = ({ navigation }) => {
     </View>
     <TouchableOpacity onPress={registerSuccess}>
       <View style={styles.button}>
-        <Text >Register</Text>
+        <Text>Register</Text>
       </View>
     </TouchableOpacity>
   </View>);
@@ -138,16 +142,16 @@ const LoginScreen = ({ navigation }) => {
         }
       }
     });
-    
-    
   };
+
   const socialLoginFunc = async() => {
     alert('Login!');
-   var user = await getUserAndPass('test');
-   console.log(user);
-  };
+     var user = await getUserAndPass('test');
+     console.log(user);
+    };
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Image source={{
         uri: 'https://isoftglobe.com/wp-content/uploads/2021/02/react-native.png', flex: 1 , height: 250,
       }}
