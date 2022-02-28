@@ -5,20 +5,26 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import detailScreen from './loginDetail';
-import { DarkTheme } from '@react-navigation/native';
-// import {LoginScreen} from './Screens/LoginScreen';
+import { createStore , Reducer} from 'redux';
+import { Provider } from 'react-redux';
+import { create } from 'react-test-renderer';
+import SettingReducer from './SettingReducer'
 
 const Stack = createNativeStackNavigator();
 const App = () => {
-  const [theme, setTheme] = useState(DarkTheme);
+  const store = createStore(SettingReducer);
+  //const [theme, setTheme] = useState(DarkTheme);
+
   return (
-    <NavigationContainer theme={theme}>
-      <Stack.Navigator initialRouteName='LoginScr'>
-        <Stack.Screen name='LoginScr' component={LoginScreen} options={{title:'Log In'}}/>
-        <Stack.Screen name='RegisterScr' component={RegisterScreen} options={{title:'Register'}}/>
-        <Stack.Screen name='LoginDetailScr' component={detailScreen}  options={{title:'Detail'}, {headerShown:false}}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer >
+        <Stack.Navigator initialRouteName='LoginScr'>
+          <Stack.Screen name='LoginScr' component={LoginScreen} options={{title:'Log In'}}/>
+          <Stack.Screen name='RegisterScr' component={RegisterScreen} options={{title:'Register'}}/>
+          <Stack.Screen name='LoginDetailScr' component={detailScreen}  options={{title:'Detail'}, {headerShown:false}}/>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 
