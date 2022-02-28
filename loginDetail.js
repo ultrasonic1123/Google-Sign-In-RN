@@ -1,12 +1,14 @@
-import React, { useState ,useRef, useEffect} from "react";
-import {View, StyleSheet, Text,Image, FlatList} from 'react-native';
+import React, { useState , useEffect} from "react";
+import {View, StyleSheet, Text,Image, FlatList, TouchableOpacity} from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from 'react-native-vector-icons/Ionicons';
 import fakeServer from "./fakeServer";
+import { useSelector ,useDispatch } from "react-redux";
+import { setDarkmode } from "./settingAction";
 
-const Home =() => {
+const Home = () => {
     const [data, setData] = useState();
-
+    // const setting = useSelector(state => state);
     const fetchData = async () => {
         const response = await fakeServer(10 , 100);
         setData([...response]);
@@ -17,7 +19,7 @@ const Home =() => {
         }, []);
 
     const handleOnEndReached = async () => {
-        const response = await fakeServer(10 ,200);
+        const response = await fakeServer(10 ,1);
         setData([...data, ...response]);
     }
 
@@ -41,11 +43,12 @@ const renderItem = ({item}) => {
         thumb = {item.thumb} />)};
 
 const Item = ({thumb, title, category, timestamp}) => {
+    const setting = useSelector(state=>state);
     return (
-        <View style={styles.item}>
+        <View style={styles.item, {backgroundColor:setting.darkMode ? '#000' : '#fff'}}>
             <Image style={{borderRadius:5}} source={{uri:thumb ,width: 60, height: 60}}/>
             <View style={{marginLeft:15}}>
-            <Text>Title:{title}</Text>
+            <Text style={{color: setting.darkMode ? '#fff' : '#000' }}>Title:{title}</Text>
             <Text>Category:{category}</Text>
             <Text>Time:{convertTime(timestamp)}</Text>
          </View>
@@ -54,8 +57,22 @@ const Item = ({thumb, title, category, timestamp}) => {
 }
 
 const Profile =() => {
+    const dispatcher = useDispatch();
+    const setting = useSelector(state => state);
+    const handleDarkMode = () => {
+        if(setting.darkMode) {
+            dispatcher(setDarkmode(false));
+        }
+        else dispatcher(setDarkmode(true));
+   }
     return(
         <View>
+            <TouchableOpacity
+                style={{ flexDirection: 'row', backgroundColor: 'white', width:100, height:30, borderRadius: 5}}
+                onPress={handleDarkMode}
+            >
+                <Text style={{ textAlign:'center'}}>{setting.darkMode ? 'DarkMode' : 'notDarkMode'}</Text>
+            </TouchableOpacity>
            <Text>Profile</Text>
         </View>
     );
@@ -74,7 +91,7 @@ const Tabs = createBottomTabNavigator();
 const detailScreen = () => 
 {
     return(
-           <Tabs.Navigator
+           <Tabs.Navigator 
            screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -119,19 +136,6 @@ const convertTime = (timestamp) => {
     if(minutes > 0) return minutes == 1 ?'a minute ago' : minutes + ' minutes ago'; 
     if(seconds > 0) return seconds == 1 ?'a second ago' : seconds + ' seconds ago'; 
     
- }
-
-const ItemDetail = ({thumb, title, cat, timestamp}) => {
-   return (
-     <View style={styles.item}>
-         <Image style={{borderRadius:5}} source={{uri:thumb ,width: 60, height: 60}}/>
-         <View style={{marginLeft:15}}>
-            <Text>Title:{title}</Text>
-            <Text>Category:{cat}</Text>
-            <Text>Time:{convertTime(timestamp)}</Text>
-         </View>
-     </View>
-   )
  }
 
 const styles = StyleSheet.create({
