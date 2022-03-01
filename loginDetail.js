@@ -39,7 +39,7 @@ const Home = () => {
     useEffect(() => {
         fetchData();
         getLastState(lastStateKey).then(value => {
-            dispatcher(setDarkmode(value));
+            dispatcher(setDarkmode(value.lastStateValue));
         });
     }, []);
 
@@ -85,12 +85,19 @@ const Item = ({ thumb, title, category, timestamp }) => {
 const Profile = () => {
     const dispatcher = useDispatch();
     
+
+    useEffect(()=> {
+        getLastState(lastStateKey).then(value => {
+            console.log(value.lastStateValue);
+            dispatcher(setDarkmode(value.lastStateValue));
+        })
+    },[]
+    )
     // if(getLastState(lastStatekey)) setting = getLastState(lastStatekey);
     // else
 
     const setting = useSelector(state => state);
-    lastStateStorage(lastStateKey,setting);
-    
+    lastStateStorage(lastStateKey,setting.darkMode);
     
     const handleDarkMode = () => {
         if (setting.darkMode) {
