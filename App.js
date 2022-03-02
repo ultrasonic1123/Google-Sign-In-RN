@@ -1,30 +1,38 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, Image, View, Text, TouchableOpacity, Linking,useEffect,FlatList} from 'react-native';
+import { StyleSheet, TextInput, Image, View, Text, TouchableOpacity, Linking, useEffect } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import detailScreen from './loginDetail';
-import { createStore , Reducer} from 'redux';
-import { Provider } from 'react-redux';
-import { create } from 'react-test-renderer';
-import SettingReducer from './SettingReducer'
+import { useDispatch } from 'react-redux';
+import { setDarkmode } from './settingAction';
+const lastStateKey = 'LAST_STATE';
+
+const getLastState = async (value) => {
+  try {
+    const lastSate = await AsyncStorage.getItem(value)
+    return lastSate != null ? JSON.parse(lastSate) : null;
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 const Stack = createNativeStackNavigator();
 const App = () => {
-  const store = createStore(SettingReducer);
-  //const [theme, setTheme] = useState(DarkTheme);
+  const dispatcher = useDispatch();
 
+  getLastState(lastStateKey).then(value => {
+    dispatcher(setDarkmode(value.lastStateValue));
+  })
   return (
-    <Provider store={store}>
-      <NavigationContainer >
-        <Stack.Navigator initialRouteName='LoginScr'>
-          <Stack.Screen name='LoginScr' component={LoginScreen} options={{title:'Log In'}}/>
-          <Stack.Screen name='RegisterScr' component={RegisterScreen} options={{title:'Register'}}/>
-          <Stack.Screen name='LoginDetailScr' component={detailScreen}  options={{title:'Detail'}, {headerShown:false}}/>
-        </Stack.Navigator>
-      </NavigationContainer>
-    </Provider>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='LoginScr'>
+        <Stack.Screen name='LoginScr' component={LoginScreen} options={{ title: 'Log In' }} />
+        <Stack.Screen name='RegisterScr' component={RegisterScreen} options={{ title: 'Register' }} />
+        <Stack.Screen name='LoginDetailScr' component={detailScreen} options={{ title: 'Detail' }, { headerShown: false }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -34,7 +42,7 @@ const App = () => {
 
 const storage = async (user, pass) => {
   try {
-    const JsonObject = JSON.stringify({userName: user, Password: pass})
+    const JsonObject = JSON.stringify({ userName: user, Password: pass })
     console.log(JsonObject)
     await AsyncStorage.setItem(user, JsonObject)
   } catch (e) {
@@ -46,7 +54,7 @@ const getUserAndPass = async (value) => {
   try {
     const userInfor = await AsyncStorage.getItem(value)
     return userInfor != null ? JSON.parse(userInfor) : null;
-  } catch(e) {
+  } catch (e) {
     console.log(e)
   }
 }
@@ -54,7 +62,7 @@ const getUserAndPass = async (value) => {
 const RegisterScreen = ({ navigation }) => {
   const [regPass, setRegPass] = useState('');
   const [regEmail, setRegMail] = useState('');
-  
+
   const checkInforRegister = () => {
     if (regEmail === '') {
       console.log('email is not empty!');
@@ -74,10 +82,10 @@ const RegisterScreen = ({ navigation }) => {
     }
     return true;
   }
-  
+
   const registerSuccess = () => {
     if (checkInforRegister()) {
-      alert('Register successful!'); 
+      alert('Register successful!');
       storage(regEmail, regPass);
       navigation.replace('LoginScr');
     }
@@ -140,26 +148,26 @@ const LoginScreen = ({ navigation }) => {
   const [pass, setPass] = useState('');
 
   const loginFunction = () => {
-     getUserAndPass(mail).then(userInfor =>{
+    getUserAndPass(mail).then(userInfor => {
       console.log(1);
-      if(userInfor!==null) {
-        if(pass == userInfor.Password) {
+      if (userInfor !== null) {
+        if (pass == userInfor.Password) {
           navigation.replace('LoginDetailScr');
         }
       }
     });
   };
 
-  const socialLoginFunc = async() => {
+  const socialLoginFunc = async () => {
     alert('Login!');
-     var user = await getUserAndPass('test');
-     console.log(user);
-    };
+    var user = await getUserAndPass('test');
+    console.log(user);
+  };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <Image source={{
-        uri: 'https://isoftglobe.com/wp-content/uploads/2021/02/react-native.png', flex: 1 , height: 250,
+        uri: 'https://isoftglobe.com/wp-content/uploads/2021/02/react-native.png', flex: 1, height: 250,
       }}
       />
       <Text style={styles.headertext}>Login</Text>
