@@ -9,27 +9,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const lastStateKey = 'LAST_STATE';
 
-const lastStateStorage = async(lastStateKey, lastStateValue) => {
+const lastStateStorage = async (lastStateKey, lastStateValue) => {
     try {
-        const lastState = JSON.stringify({lastStateValue: lastStateValue})
+        const lastState = JSON.stringify({ lastStateValue: lastStateValue })
         await AsyncStorage.setItem(lastStateKey, lastState)
-      } catch (e) {
+    } catch (e) {
         console.log(e)
-      }
+    }
 }
 
-const getLastState = async (value) => {
-    try {
-      const userInfor = await AsyncStorage.getItem(value)
-      return userInfor != null ? JSON.parse(userInfor) : null;
-    } catch(e) {
-      console.log(e)
-    }
-  }
+//   const getLastState = async (value) => {
+//     try {
+//       const lastState = await AsyncStorage.getItem(value)
+//       return lastState != null ? JSON.parse(lastState) : null;
+//     } catch(e) {
+//       console.log(e)
+//     }
+//   }
 
 const Home = () => {
     const [data, setData] = useState();
-    const dispatcher = useDispatch();
     // const setting = useSelector(state => state);
     const fetchData = async () => {
         const response = await fakeServer(10, 100);
@@ -38,9 +37,6 @@ const Home = () => {
 
     useEffect(() => {
         fetchData();
-        getLastState(lastStateKey).then(value => {
-            dispatcher(setDarkmode(value.lastStateValue));
-        });
     }, []);
 
     const handleOnEndReached = async () => {
@@ -84,27 +80,16 @@ const Item = ({ thumb, title, category, timestamp }) => {
 
 const Profile = () => {
     const dispatcher = useDispatch();
-    
-
-    useEffect(()=> {
-        getLastState(lastStateKey).then(value => {
-            console.log(value.lastStateValue);
-            dispatcher(setDarkmode(value.lastStateValue));
-        })
-    },[]
-    )
-    // if(getLastState(lastStatekey)) setting = getLastState(lastStatekey);
-    // else
-
     const setting = useSelector(state => state);
-    lastStateStorage(lastStateKey,setting.darkMode);
-    
+    lastStateStorage(lastStateKey, setting.darkMode);
     const handleDarkMode = () => {
         if (setting.darkMode) {
             dispatcher(setDarkmode(false));
+            
         }
         else {
             dispatcher(setDarkmode(true));
+            
         }
     }
 
