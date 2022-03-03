@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, Image, View, Text, TouchableOpacity, Linking, useEffect } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, TextInput, Image, View, Text, TouchableOpacity, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -22,9 +22,12 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   const dispatcher = useDispatch();
 
-  getLastState(lastStateKey).then(value => {
-    dispatcher(setDarkmode(value.lastStateValue));
-  })
+  useEffect(() => {
+    getLastState(lastStateKey).then(value => {
+      dispatcher(setDarkmode(value.lastStateValue));
+    })
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='LoginScr'>
