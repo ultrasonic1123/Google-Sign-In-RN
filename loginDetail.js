@@ -81,16 +81,15 @@ const Item = ({ thumb, title, category, timestamp }) => {
 const Profile = () => {
     const dispatcher = useDispatch();
     const setting = useSelector(state => state);
-    lastStateStorage(lastStateKey, setting.darkMode);
+    
     const handleDarkMode = () => {
         if (setting.darkMode) {
             dispatcher(setDarkmode(false));
-            
         }
         else {
             dispatcher(setDarkmode(true));
-            
         }
+        lastStateStorage(lastStateKey, !setting.darkMode);
     }
 
     return (
