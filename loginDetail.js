@@ -6,9 +6,13 @@ import fakeServer from "./fakeServer";
 import { useSelector, useDispatch } from "react-redux";
 import { setDarkmode } from "./settingAction";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { NativeModules, Button } from 'react-native';
+const { CalendarModule } = NativeModules;
 const lastStateKey = 'LAST_STATE';
 
+const add = async(a, b) => {
+    return await CalendarModule.add(a,b);
+}
 const lastStateStorage = async (lastStateKey, lastStateValue) => {
     try {
         const lastState = JSON.stringify({ lastStateValue: lastStateValue })
@@ -107,9 +111,19 @@ const Profile = () => {
 }
 
 const Notifications = () => {
+    const onPress = () => {
+        CalendarModule.createCalendarEvent('testName', 'testLocation');
+      };
+      console.log(add(1,2));
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text>Notifications Screen</Text>
+            <Button 
+                title="Click to invoke your native module!"
+                color="#841584"
+                onPress={onPress}
+            />
+            <Text>{add(1,2).then(value => value)}</Text>
         </View>
     );
 }
