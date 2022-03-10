@@ -15,6 +15,9 @@ const add = async(a, b) => {
      return await CalendarModule.add(a,b);
 }
 
+const calEx = async() => {
+    return await CalendarModule.calEx();
+}
 const lastStateStorage = async (lastStateKey, lastStateValue) => {
     try {
         const lastState = JSON.stringify({ lastStateValue: lastStateValue })
@@ -73,7 +76,7 @@ const renderItem = ({ item }) => {
 const Item = ({ thumb, title, category, timestamp }) => {
     const setting = useSelector(state => state);
     return (
-        <View style={styles.item, { backgroundColor: setting.darkMode ? '#000' : '#fff' }}>
+        <View style={styles.item,{ backgroundColor: setting.darkMode ? '#000' : '#fff'} }>
             <Image style={{ borderRadius: 5 }} source={{ uri: thumb, width: 60, height: 60 }} />
             <View style={{ marginLeft: 15 }}>
                 <Text style={{ color: setting.darkMode ? '#fff' : '#000' }}>Title:{title}</Text>
@@ -114,10 +117,16 @@ const Profile = () => {
 
 const Notifications = () => {
     const [sum, setSum] = useState(0);
+    const [ex, setEx] = useState(1);
     add(10,20).then(value => {
         console.log(value);
         setSum(value);
     });
+
+    calEx().then(value => {
+        setEx(Math.sqrt(value * 6));
+    });
+
     const onPress = () => {
         CalendarModule.createCalendarEvent('testName', 'testLocation');
       };
@@ -133,6 +142,7 @@ const Notifications = () => {
                 value from native module:
             </Text>
             <Text>{sum}</Text>
+            <Text>This is Pi: {ex}</Text>
         </View>
     );
 }
@@ -154,7 +164,6 @@ const detailScreen = () => {
                     else {
                         iconName = focused ? 'notifications' : 'notifications-outline';
                     }
-
                     // You can return any component that you like here!
                     return <Icon name={iconName} size={size} color={color} />;
                 },
@@ -169,6 +178,7 @@ const detailScreen = () => {
 }
 
 const convertTime = (timestamp) => {
+    
     var years, months, days, hours, minutes, seconds;
     var currentSeconds = Date.now() / 1000;
     seconds = (currentSeconds - timestamp);
@@ -194,4 +204,5 @@ const styles = StyleSheet.create({
     }
 
 });
+
 export default detailScreen;
